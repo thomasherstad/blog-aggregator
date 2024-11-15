@@ -36,6 +36,8 @@ func main() {
 	commands.actions = make(map[string]func(*state, command) error)
 	commands.register("login", handlerLogin)
 	commands.register("register", handlerRegister)
+	commands.register("users", handlerUsers)
+	commands.register("reset", handlerReset)
 
 	args := os.Args[1:]
 	if len(args) < 1 {
@@ -89,8 +91,6 @@ func handlerRegister(s *state, cmd command) error {
 	}
 	username := cmd.args[0]
 
-	fmt.Println("Username from register function:", username)
-
 	dbUser, err := s.db.GetUser(context.Background(), sql.NullString{String: username, Valid: true})
 	if err == nil {
 		fmt.Println("Username already found in database:", dbUser)
@@ -112,5 +112,42 @@ func handlerRegister(s *state, cmd command) error {
 	fmt.Println("New user successfully stored in database:", newUser)
 
 	handlerLogin(s, cmd)
+	return nil
+}
+
+func handlerReset(s *state, cmd command) error {
+	if len(cmd.args) > 0 {
+		return errors.New("the reset command does not take any arguments")
+	}
+
+	s.db.DeleteUsers(context.Background())
+	fmt.Println("All users deleted")
+
+	return nil
+}
+
+func handlerUsers(s *state, cmd command) error {
+	if len(cmd.args) > 0 {
+		return errors.New("the users command does not take any arguments")
+	}
+
+	usersList, err := s.db.GetUsers(context.Background())
+	if err != nil {
+		return err
+	}
+
+	if len(usersList) == 0 {
+		fmt.Println("There are currently no registered users.")
+		return nil
+	}
+
+	for _, user := range usersList {
+		fmt.Printf("- %s ", user.Name.String)
+		if user.Name.String == s.cfg.CurrentUsername {
+			fmt.Printf("(current)")
+		}
+		fmt.Printf("\n")
+	}
+
 	return nil
 }
