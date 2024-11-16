@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/thomasherstad/blog-aggregator/internal/database"
 )
 
@@ -20,9 +22,12 @@ func handlerAddFeed(s *state, cmd command) error {
 	}
 
 	feed, err := s.db.CreateFeed(context.Background(), database.CreateFeedParams{
-		Name:   name,
-		Url:    url,
-		UserID: currentUser.ID,
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      name,
+		Url:       url,
+		UserID:    currentUser.ID,
 	})
 	if err != nil {
 		return fmt.Errorf("couldn't create feed in database. error: %w", err)
