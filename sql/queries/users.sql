@@ -19,7 +19,7 @@ SELECT *
 FROM users
 WHERE id = $1;
 
--- name: DeleteUsers :exec
+-- name: DeleteAllUsers :exec
 DELETE FROM users;
 
 -- name: GetUsers :many

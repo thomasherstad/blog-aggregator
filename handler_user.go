@@ -51,17 +51,6 @@ func handlerRegister(s *state, cmd command) error {
 	return nil
 }
 
-func handlerReset(s *state, cmd command) error {
-	if len(cmd.args) > 0 {
-		return errors.New("the reset command does not take any arguments")
-	}
-
-	s.db.DeleteUsers(context.Background())
-	fmt.Println("All users deleted")
-
-	return nil
-}
-
 func handlerUsers(s *state, cmd command) error {
 	if len(cmd.args) > 0 {
 		return errors.New("the users command does not take any arguments")
