@@ -1,26 +1,29 @@
 package main
 
 import (
-	"context"
-	"errors"
 	"fmt"
+	"time"
 )
 
 func handlerAggregate(s *state, cmd command) error {
-	if len(cmd.args) > 0 {
-		return errors.New("too many arguments given")
+	if len(cmd.args) != 1 {
+		return fmt.Errorf("agg takes 1 argument - %v given", len(cmd.args))
 	}
 
-	url := "https://wagslane.dev/index.xml"
-
-	fmt.Println("The url is:", url)
-
-	feed, err := fetchFeed(context.Background(), url)
+	timeBetweenReqs, err := time.ParseDuration(cmd.args[0])
 	if err != nil {
-		return err
+		return fmt.Errorf("problem parsing time between requests, error: %w", err)
 	}
 
-	fmt.Println(feed)
+	fmt.Println("Collecting feeds every", timeBetweenReqs)
 
-	return nil
+	// collect feeds every x time
+	ticker := time.NewTicker(timeBetweenReqs)
+	for ; ; <-ticker.C {
+		err = scrapeFeeds(s)
+		if err != nil {
+			return err
+		}
+	}
+
 }
