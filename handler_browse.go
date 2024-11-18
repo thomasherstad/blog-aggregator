@@ -10,16 +10,16 @@ import (
 
 func handlerBrowse(s *state, cmd command, user database.User) error {
 	var limit int
-	if len(cmd.args) == 1 {
+	if len(cmd.args) == 0 {
 		limit = 2
-	} else if len(cmd.args) == 2 {
+	} else if len(cmd.args) == 1 {
 		var err error
-		limit, err = strconv.Atoi(cmd.args[1])
+		limit, err = strconv.Atoi(cmd.args[0])
 		if err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("browse takes 1 or 2 arguments, %v given", len(cmd.args))
+		return fmt.Errorf("browse takes 0 or 1 arguments, %v given", len(cmd.args))
 	}
 
 	posts, err := s.db.GetPostsForUser(context.Background(), database.GetPostsForUserParams{

@@ -65,7 +65,6 @@ func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 func unescapeRSSFeed(feed *RSSFeed) {
 	// if feed is not a feed
 	// return error
-
 	feed.Channel.Title = html.UnescapeString(feed.Channel.Title)
 	feed.Channel.Description = html.UnescapeString(feed.Channel.Description)
 	for i, item := range feed.Channel.Item {
